@@ -1,0 +1,253 @@
+openapi: 3.0.1
+info:
+  title: Products Repository OpenAPI definition
+  version: v0.0.1
+servers:
+  - url: https://billing.eurona.com/product-repository
+    description: Generated server URL
+tags:
+  - name: Product Repository
+    description: Operations Controller for CRUD Product
+paths:
+  /products:
+    post:
+      tags:
+        - product-entity-controller
+      description: create-product
+      operationId: postCollectionResource-product-post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequestBody'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseBody'
+
+  /products/{id}:
+    get:
+      tags:
+        - product-entity-controller
+      description: get-product
+      operationId: getItemResource-product-get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseBody'
+        '404':
+          description: Not Found
+  
+    put:
+      tags:
+        - product-entity-controller
+      description: update-product
+      operationId: putItemResource-product-put
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequestBody'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseBody'
+        '201':
+          description: Created
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseBody'
+        '204':
+          description: No Content
+  
+    delete:
+      tags:
+        - product-entity-controller
+      description: delete-product
+      operationId: deleteItemResource-product-delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      
+    patch:
+      tags:
+        - product-entity-controller
+      description: patch-product
+      operationId: patchItemResource-product-patch
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequestBody'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseBody'
+        '204':
+          description: No Content
+
+components:
+  schemas:
+    ProductRequestBody:
+      type: object
+      required: 
+        - externalId
+        - code
+        - name
+        - category
+        - hierarchy
+      properties:
+        externalId:
+          type: integer
+          format: int64
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        alternativeName:
+          type: string
+        category:
+          type: string
+        technology:
+          "$ref": "#/components/schemas/ProductTechnologyBody"
+        hierarchy:
+          "$ref": "#/components/schemas/ProductHierarchyBody"
+        frecuency:
+          "$ref": "#/components/schemas/ProductFrecuencyBody"
+        validity:
+          "$ref": "#/components/schemas/ProductIntervalBody"
+    
+    ProductResponseBody:
+      type: object
+      required: 
+        - id
+        - externalId
+        - code
+        - name
+        - category
+        - hierarchy
+      properties:
+        id:
+          type: integer
+          format: int64
+        externalId:
+          type: integer
+          format: int64
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        alternativeName:
+          type: string
+        category:
+          type: string
+        technology:
+          "$ref": "#/components/schemas/ProductTechnologyBody"
+        hierarchy:
+          "$ref": "#/components/schemas/ProductHierarchyBody"
+        frecuency:
+          "$ref": "#/components/schemas/ProductFrecuencyBody"
+        validity:
+          "$ref": "#/components/schemas/ProductIntervalBody"
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedAt:
+          type: string
+          format: date-time
+        lastModifiedBy:
+          type: string
+
+    ProductTechnologyBody:
+      type: string
+      enum:
+        - SAT
+        - VOIP
+        - MOBILE
+        - FIXED_WIRELESS
+        - FTTH
+
+    ProductHierarchyBody:
+      type: object
+      required:
+      - level1
+      properties:
+        level1:
+          "$ref": "#/components/schemas/ProductHierarchyLevelBody"
+        level2:
+          "$ref": "#/components/schemas/ProductHierarchyLevelBody"
+
+    ProductHierarchyLevelBody:
+      type: object
+      required:
+      - code
+      - name
+      properties:
+        code:
+          type: integer
+        name:
+          type: string
+          
+    ProductFrecuencyBody:
+      type: string
+      enum:
+      - ONE_TIME_PAYMENT
+      - RECURRING_PAYMENT
+          
+    ProductIntervalBody:
+      type: object
+      properties:
+        dateFrom:
+          type: string
+          format: date-time
+        dateTo:
+          type: string
+          format: date-time
