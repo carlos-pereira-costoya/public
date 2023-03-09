@@ -1,0 +1,577 @@
+openapi: 3.0.1
+info:
+  title: 'Spring Boot: Bill query container manager'
+  description: Bill query container manager
+  version: v0.0.1
+  contact:
+    name: Optare Solutions
+    url: http://www.optaresolutions.com
+    email: help@optaresolutions.com
+servers:
+  - url: https://billing.eurona.com/bill-query-container-manager
+    description: Generated server url
+tags:
+  - name: Bill Manager
+    description: Operations Controller for query Bill
+paths:
+  /bills:
+    get:
+      tags:
+        - bill-entity-controller
+      description: get-bill
+      operationId: getCollectionResource-bill-get_1
+      parameters:
+        - name: page
+          in: query
+          description: Zero-based page index (0..N)
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: The size of the page to be returned
+          required: false
+          schema:
+            minimum: 1
+            type: integer
+            default: 20
+        - name: sort
+          in: query
+          description: 'Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/PagedModelEntityModelBill'
+            application/x-spring-data-compact+json:
+              schema:
+                $ref: '#/components/schemas/PagedModelEntityModelBill'
+            text/uri-list:
+              schema:
+                type: string
+  # Busqueda
+  /bills/search/findPageBill:
+    get:
+      tags:
+        - bill-search-controller
+      operationId: executeSearch-bill-get
+      parameters:
+        - name: accountId
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: billNo
+          in: query
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+        - name: billingDateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: billingDateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: createdAtFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: createdAtTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: lastModifiedAtFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: lastModifiedAtTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          description: Zero-based page index (0..N)
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: The size of the page to be returned
+          required: false
+          schema:
+            minimum: 1
+            type: integer
+            default: 20
+        - name: sort
+          in: query
+          description: 'Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/PagedModelEntityModelBill'
+            application/x-spring-data-compact+json:
+              schema:
+                $ref: '#/components/schemas/PagedModelEntityModelBill'
+            text/uri-list:
+              schema:
+                type: string
+        '404':
+          description: Not Found
+  /bills/{id}:
+    get:
+      tags:
+        - bill-entity-controller
+      description: get-bill
+      operationId: getItemResource-bill-get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '404':
+          description: Not Found
+
+  /bills/{id}/details:
+    get:
+      tags:
+        - bill-property-reference-controller
+      description: get-billdetail-by-bill-Id
+      operationId: followPropertyReference-bill-get_2_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/BillDetail'
+            text/uri-list:
+              schema:
+                type: string
+        '404':
+          description: Not Found
+
+components:
+  schemas:
+    Bill:
+      required:
+        - id
+        - accountId
+        - billNo
+        - state
+        - billDate
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        billGroup:
+          $ref: '#/components/schemas/BillGroup'
+        accountId:
+          type: integer
+          format: int64       
+        billNo:
+          type: string
+          description: Numero de referencia de factura
+        billDocNo:
+          type: string
+          description: Número de documento (SAP)
+        bankRefNo:
+          type: string
+          description: Número de eferencia bancaria. Número de referencia vinculada al pago manual en TPV.
+        autoValidation:
+          type: boolean
+        state:
+          $ref: '#/components/schemas/BillState'
+        billDate:
+          type: string
+          format: date-time
+          description: Fecha de la factura
+        paymentDueDate:
+          type: string
+          format: date-time
+          description: Fecha de vencimiento.
+        sapSentDate:
+          type: string
+          format: date-time
+          description: Fecha de envio a SAP.
+        customerSentDate:
+          type: string
+          format: date-time
+          description: Fecha de envio a cliente.
+        billingPeriodStart:
+          type: string
+          format: date-time
+        billingPeriodEnd:
+          type: string
+          format: date-time
+        noTaxTotalAmount:
+          type: number
+          format: double
+        totalAmount:
+          type: number
+          format: double
+        remainingAmount:
+          type: number
+          format: double
+        withholdingAmount:
+          type: number
+          format: double
+          description: Importe con retención
+        footnotes:
+          type: array
+          items:
+            type: string
+          description: Notas al pie
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillDetail'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillAttachment'
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedAt:
+          type: string
+          format: date-time
+        lastModifiedBy:
+          type: string
+
+    BillDetail:
+      required:
+        - id
+        - productId
+        - name
+        - units
+        - ratedAmount
+        - amount
+        - taxRate
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        name:
+          type: string
+          description: Nombre del concepto
+        displayName:
+          type: string
+          description: Nombre del concepto
+        units:
+          type: number
+          format: double
+        ratedAmount:
+          type: number
+          format: double
+        amount:
+          type: number
+          format: double
+        taxRate:
+          $ref: '#/components/schemas/TaxType'
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedAt:
+          type: string
+          format: date-time
+        lastModifiedBy:
+          type: string
+
+    BillGroup:
+      required:
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+# REVISAR - a este nivel? o por factura ?
+        societyId:
+          type: integer
+          format: int64
+        customerId:
+          type: integer
+          format: int64
+# REVISAR - a este nivel? o por factura ? - end revisar
+        billSeries:
+          $ref: '#/components/schemas/BillSeries'
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
+        sendingDay:
+          $ref: '#/components/schemas/SendingDay'
+        groupNote:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedAt:
+          type: string
+          format: date-time
+        lastModifiedBy:
+          type: string
+
+    BillSeries:
+      required:
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedAt:
+          type: string
+          format: date-time
+        lastModifiedBy:
+          type: string
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        prefix:
+          type: string
+        lastNumber:
+          type: integer
+          format: int64
+        lastBillDate:
+          type: string
+          format: date-time
+
+    PaymentType:
+      required:
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedAt:
+          type: string
+          format: date-time
+        lastModifiedBy:
+          type: string
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    SendingDay:
+      required:
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedAt:
+          type: string
+          format: date-time
+        lastModifiedBy:
+          type: string
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    BillState:
+      type: string
+      enum:
+        - NEW
+        - ON_HOLD
+        - VALIDATED
+        - SENT
+        - UNPAID
+        - PARTIALLY_PAID
+        - SETTLED
+        - ERROR
+
+    BillAttachment:
+      required:
+        - id
+        - name
+        - mimeType
+        - size
+        - url
+        - date
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        displayName:
+          type: string
+        mimeType:
+          type: string
+        size:
+          type: integer
+          format: int64
+        url:
+          type: string
+        date:
+          type: string
+          format: date-time
+
+    TaxType:
+      required:
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        value:
+          type: number
+          format: double
+        externalId:
+          type: string
+
+
+# Paginación
+
+    PagedModelEntityModelBill:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            bills:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bill'
+        _links:
+          $ref: '#/components/schemas/Links'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+
+    Links:  
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/Link'
+
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+    
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
