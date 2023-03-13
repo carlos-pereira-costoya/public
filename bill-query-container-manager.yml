@@ -355,6 +355,7 @@ components:
         - units
         - ratedAmount
         - amount
+        - totalSum
         - currencyId
         - currencyName
         - taxTypeId
