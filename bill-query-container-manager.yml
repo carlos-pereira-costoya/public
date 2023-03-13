@@ -195,7 +195,7 @@ components:
         - state
         - billDate
         - noTaxTotalAmount
-        - totalAccount
+        - totalAmount
         - createdAt
         - createdBy
         - lastModifiedAt
@@ -229,8 +229,8 @@ components:
           type: boolean
         state:
           $ref: '#/components/schemas/BillState'
-        errorState:
-          $ref: '#/components/schemas/BillErrorState'
+        operationalState:
+          $ref: '#/components/schemas/BillOperationalState'
         billDate:
           type: string
           format: date-time
@@ -271,11 +271,8 @@ components:
           format: int64
         currencyName:
           type: string
-        footnotes:
-          type: array
-          items:
-            type: string
-          description: Notas al pie
+        notes:
+          type: string
         details:
           type: array
           items:
@@ -323,7 +320,7 @@ components:
         displayName:
           type: string
           description: Nombre del concepto
-        totalSum:
+        totalAmount:
           type: number
           format: double
         currencyId:
@@ -355,7 +352,7 @@ components:
         - units
         - ratedAmount
         - amount
-        - totalSum
+        - totalAmount
         - currencyId
         - currencyName
         - taxTypeId
@@ -405,7 +402,7 @@ components:
         amount:
           type: number
           format: double
-        totalSum:
+        totalAmount:
           type: number
           format: double
         pricePlanId:
@@ -459,7 +456,7 @@ components:
           $ref: '#/components/schemas/PaymentType'
         sendingDay:
           $ref: '#/components/schemas/SendingDay'
-        groupNote:
+        notes:
           type: string
         createdAt:
           type: string
@@ -561,14 +558,14 @@ components:
         - SENT
         - ERROR
 
-    BillErrorState:
+    BillOperationalState:
       type: string
       enum:
-        - PDF
-        - CSV
-        - SEND_CSV
-        - SEND_PDF
-        - OTHER
+        - PDF_ERROR
+        - CSV_ERROR
+        - SEND_CSV_ERROR
+        - SEND_PDF_ERROR
+        - OTHER_ERROR
 
     BillAttachment:
       required:
