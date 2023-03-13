@@ -229,6 +229,8 @@ components:
           type: boolean
         state:
           $ref: '#/components/schemas/BillState'
+        errorState:
+          $ref: '#/components/schemas/BillErrorState'
         billDate:
           type: string
           format: date-time
@@ -313,15 +315,22 @@ components:
         parentProductId:
           type: integer
           format: int64
-        sectionId:
-          type: integer
-          format: int64
+        category:
+          type: string
         name:
           type: string
           description: Nombre del concepto
         displayName:
           type: string
           description: Nombre del concepto
+        totalSum:
+          type: number
+          format: double
+        currencyId:
+          type: integer
+          format: int64
+        currencyName:
+          type: string
         charges:
           type: array
           items:
@@ -393,6 +402,9 @@ components:
           type: number
           format: double
         amount:
+          type: number
+          format: double
+        totalSum:
           type: number
           format: double
         pricePlanId:
@@ -547,6 +559,15 @@ components:
         - VALIDATED
         - SENT
         - ERROR
+
+    BillErrorState:
+      type: string
+      enum:
+        - PDF
+        - CSV
+        - SEND_CSV
+        - SEND_PDF
+        - OTHER
 
     BillAttachment:
       required:
