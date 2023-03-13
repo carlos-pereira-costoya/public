@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: 'Spring Boot: Bill query container manager'
   description: Bill query container manager
-  version: v0.0.1
+  version: v0.0.2
   contact:
     name: Optare Solutions
     url: http://www.optaresolutions.com
@@ -12,7 +12,7 @@ servers:
     description: Generated server url
 tags:
   - name: Bill Manager
-    description: Operations Controller for query Bill
+    description: Operations Controller for query Bills
 paths:
   /bills:
     get:
@@ -264,16 +264,16 @@ components:
           type: number
           format: double
           description: Importe con retención
+        currencyId:
+          type: integer
+          format: int64
+        currencyName:
+          type: string
         footnotes:
           type: array
           items:
             type: string
           description: Notas al pie
-        tags:
-          type: array
-          items:
-            type: string
-          description: Etiquetas para la factura (primera, última factura)
         details:
           type: array
           items:
@@ -298,10 +298,6 @@ components:
         - id
         - productId
         - name
-        - units
-        - ratedAmount
-        - amount
-        - taxRate
         - createdAt
         - createdBy
         - lastModifiedAt
@@ -326,17 +322,6 @@ components:
         displayName:
           type: string
           description: Nombre del concepto
-        units:
-          type: number
-          format: double
-        ratedAmount:
-          type: number
-          format: double
-        amount:
-          type: number
-          format: double
-        taxRate:
-          $ref: '#/components/schemas/TaxType'
         charges:
           type: array
           items:
@@ -352,54 +337,55 @@ components:
         lastModifiedBy:
           type: string
 
-    ### FIXME REVISAR
-
-
     BillDetailCharge:
       type: object
+      required:
+        - id
+        - productId
+        - name
+        - units
+        - ratedAmount
+        - amount
+        - currencyId
+        - currencyName
+        - taxTypeId
+        - taxTypeName
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
       properties:
         id:
           type: integer
           format: int64
-        recurrenceType:
-          type: string
-          enum:
-            - Recurrent
-            - Puntual
-        createdAt:
-          type: string
-          format: date-time
-        lastModifiedAt:
-          type: string
-          format: date-time
-        createdBy:
-          type: string
-        lastModifiedBy:
-          type: string
-        hotspotName:
-          type: string
-        hotspotId:
-          type: integer
-          format: int64
-        pricePlanId:
-          type: integer
-          format: int64
-        pricePlanName:
-          type: string
-        stateId:
-          type: integer
-          format: int64
-        stateName:
-          type: string
-        concept:
-          type: string
         productId:
           type: integer
           format: int64
-        productName:
+        parentProductId:
+          type: integer
+          format: int64
+        chargeTypeId:
+          type: integer
+          format: int64
+        chargeTypeName:
           type: string
-        unitUom:
+        recurrenceType:
           type: string
+          enum:
+            - RECURRENT
+            - PUNTUAL
+        periodStart:
+          type: string
+          format: date-time
+        periodEnd:
+          type: string
+          format: date-time
+        name:
+          type: string
+          description: Nombre del cargo
+        displayName:
+          type: string
+          description: Nombre del cargo a mostrar
         units:
           type: number
           format: double
@@ -409,8 +395,9 @@ components:
         amount:
           type: number
           format: double
-        billingCycle:
-          type: string
+        pricePlanId:
+          type: integer
+          format: int64
         currencyId:
           type: integer
           format: int64
@@ -421,42 +408,18 @@ components:
           format: int64
         taxTypeName:
           type: string
-        billGroupId:
-          type: integer
-          format: int64
-        billGroupName:
-          type: string
-        commision:
-          type: number
-          format: double
-        totalPvp:
-          type: number
-          format: double
-        displayName:
-          type: string
-        chargeTypeId:
-          type: integer
-          format: int64
-        chargeTypeName:
-          type: string
-        usageId:
-          type: integer
-          format: int64
-        usageName:
-          type: string
-        requester:
-          type: string
-        timestamp:
-          type: string
-          format: date-time
-        endTimestamp:
-          type: string
-          format: date-time
         billable:
           type: boolean
-
-           ### FIXME REVISAR
-
+        createdAt:
+          type: string
+          format: date-time
+        lastModifiedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedBy:
+          type: string
 
     BillGroup:
       required:
@@ -504,16 +467,6 @@ components:
         - lastModifiedBy
       type: object
       properties:
-        createdAt:
-          type: string
-          format: date-time
-        createdBy:
-          type: string
-        lastModifiedAt:
-          type: string
-          format: date-time
-        lastModifiedBy:
-          type: string
         id:
           type: integer
           format: int64
@@ -527,15 +480,6 @@ components:
         lastBillDate:
           type: string
           format: date-time
-
-    PaymentType:
-      required:
-        - createdAt
-        - createdBy
-        - lastModifiedAt
-        - lastModifiedBy
-      type: object
-      properties:
         createdAt:
           type: string
           format: date-time
@@ -546,10 +490,29 @@ components:
           format: date-time
         lastModifiedBy:
           type: string
+
+    PaymentType:
+      required:
+        - createdAt
+        - createdBy
+        - lastModifiedAt
+        - lastModifiedBy
+      type: object
+      properties:
         id:
           type: integer
           format: int64
         name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        lastModifiedAt:
+          type: string
+          format: date-time
+        lastModifiedBy:
           type: string
 
     SendingDay:
@@ -560,6 +523,11 @@ components:
         - lastModifiedBy
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
         createdAt:
           type: string
           format: date-time
@@ -569,11 +537,6 @@ components:
           type: string
           format: date-time
         lastModifiedBy:
-          type: string
-        id:
-          type: integer
-          format: int64
-        name:
           type: string
 
     BillState:
@@ -612,31 +575,6 @@ components:
         date:
           type: string
           format: date-time
-
-    TaxType:
-      required:
-        - createdAt
-        - createdBy
-        - lastModifiedAt
-        - lastModifiedBy
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        value:
-          type: number
-          format: double
-        externalId:
-          type: string
-
-
-# meter cargos asocaidos a cada concepto, igual que en la factura modelo
-# llevar sociedad, cliente a la factura también, quitar account.
-
-
 
 # Paginación
 
